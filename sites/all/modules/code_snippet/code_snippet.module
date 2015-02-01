@@ -1,0 +1,293 @@
+<?php
+
+/**
+ * @file
+ * Implementation of code snippet data type and WYSIWYG bridge.
+ */
+
+/**
+ * Implementation of hook_menu().
+ */
+function code_snippet_menu() {
+  $items = array();
+
+  $items['code-snippet/load'] = array(
+    'title' => 'Insert or update a code snippet (WYSIWYG integration)',
+    'page callback' => 'code_snippet_wysiwyg_plugin_loader',
+    'file' => 'code_snippet.dialog.inc',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['code-snippet/image/%'] = array(
+    'title' => 'Returns a code snippet thumb during WYSIWYG integration.',
+    'page callback' => 'code_snippet_wysiwyg_image_loader',
+    'page arguments' => array(2),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['code-snippet/preview/%'] = array(
+    'title' => 'Returns a code snippet during WYSIWYG integration.',
+    'page callback' => 'code_snippet_wysiwyg_preview_loader',
+    'page arguments' => array(2),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['code-snippet/%/%/%/%'] = array(
+    'title' => 'Insert or update an code snippet (WYSIWYG integration)',
+    'page callback' => 'code_snippet_wysiwyg_page_loader',
+    'page arguments' => array(1, 2, 3, 4),
+    'file' => 'code_snippet.dialog.inc',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function code_snippet_theme($existing, $type, $theme, $path) {
+  return array(
+    'code_snippet_dialog_list_form' => array(
+      'render element' => 'form'
+    ),
+    'code_snippet_dialog_form'      => array(
+      'render element' => 'form'
+    )
+  );
+}
+
+/**
+ * Helper function to load and check permissions of a
+ * code snippet.
+ */
+function code_snippet_load($csid) {
+  $query = db_query("SELECT * FROM {code_snippet} WHERE csid = :csid", array(':csid' => $csid));
+  $code_snippet = $query->fetch();
+  if ($code_snippet && node_access('view', _code_snippet_node_load($code_snippet->nid))) {
+    return $code_snippet;
+  }
+}
+
+/**
+ * Implementation of code_snippet_node_prepare().
+ */
+function code_snippet_node_prepare($node) {
+  drupal_add_js(array('codeSnippet' => array('nid' => property_exists($node, 'nid') ? $node->nid : null)), 'setting');
+}
+
+/**
+ * Implementation of code_snippet_node_delete().
+ */
+function code_snippet_node_delete($node) {
+  db_query("DELETE FROM {code_snippet} WHERE nid = :nid", array(':nid' => $node->nid));
+}
+
+/**
+ * Implementation of hook_wysiwyg_include_directory().
+ */
+function code_snippet_wysiwyg_include_directory($type) {
+  switch ($type) {
+    case 'plugins':
+      return $type;
+  }
+}
+
+/**
+ * Matches a Wysiwyg image with the code snippet type.
+ */
+function code_snippet_wysiwyg_image_loader($csid) {
+  $snippet = code_snippet_load($csid);
+  $base = drupal_get_path('module', 'code_snippet');
+  $file = $base .'/images/code.png';
+  if ($snippet && file_exists($base .'/images/'. $snippet->type .'.png')) {
+    $file = $base .'/images/'. $snippet->type .'.png';
+  }
+  _code_snippet_stream_img($file);
+}
+
+/**
+ * Generates a formated preview of a code snippet.
+ */
+function code_snippet_wysiwyg_preview_loader($csid) {
+  if ($snippet = code_snippet_load($csid)) {
+    $values = _code_snippet_normalise_default_values($_GET);
+    $values['csid'] = $snippet->csid;
+    $output = code_snippet_code_snippet_process($values);
+  }
+  else {
+    $output = t('No code snippet was found. It may not exist or you may not have permission to view it.');
+  }
+  return drupal_json_output(array('status' => TRUE, 'data' => $output));
+}
+
+/**
+ * Streams the image tags used in the editor.
+ * TODO: Turn off caching once designed.
+ */
+function _code_snippet_stream_img($file) {
+  header('Content-Type: image/png');
+  header('Expires: 0');
+  header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+  header('Pragma: public');
+  header('Content-Length: '. filesize($file));
+  ob_clean();
+  flush();
+  readfile($file);
+  exit;
+}
+
+function code_snippet_filter_tips($delta, $format, $long = FALSE) {
+  if ($long) {
+    return t('Enables the insertion of code segments that have syntax highlighting using the GeSHi engine.');
+  }
+}
+
+function _code_snippet_filter_process($text, $filter) {
+  require_once drupal_get_path('module', 'geshifilter') . '/geshifilter.pages.inc';
+  $pattern = '/\[snippet\|([^\[\]]+)\]/';
+  return preg_replace_callback($pattern, '_code_snippet_code_snippet_process', $text);
+}
+
+/**
+ * Implementation of hook_filter_info().
+ */
+function code_snippet_filter_info() {
+  return array(
+    'code_snippet' => array(
+      'title'            => t('Code snippets'),
+      'description'      => t('Code fragments can be added to this post. You do not need to enable the GeSHi filter for syntax highlighting of these fragments.'),
+      'process callback' => '_code_snippet_filter_process',
+      'tips callback'    => 'code_snippet_filter_tips'
+    )
+  );
+}
+
+/**
+ * Wrapper for node_load().
+ *
+ * Potentially hit node_access multiple times, so
+ * caching the results here.
+ */
+function _code_snippet_node_load($nid) {
+  static $nodes = array();
+  if (!array_key_exists($nid, $nodes)) {
+    // Prevents infinite recursion when calling node_load() next
+    $nodes[$nid] = null;
+
+    $nodes[$nid] = node_load($nid);
+  }
+  return $nodes[$nid];
+}
+
+/**
+ * The preg_replace_callback callback to find [snippet] tags.
+ */
+function _code_snippet_code_snippet_process($matches) {
+  $values = array();
+  foreach (explode('|', $matches[1]) as $part) {
+    list($key, $value) = explode('=', $part);
+    $values[$key] = $value;
+  }
+  return code_snippet_code_snippet_process($values, $matches[0]);
+}
+
+/**
+ * Does the highlighting on a code snippet.
+ *
+ * It produces an HTML comment on failure if the tag is
+ * given.
+ */
+function code_snippet_code_snippet_process($values = array(), $tag = FALSE) {
+  $values = _code_snippet_normalise_default_values($values);
+  if ($code_snippet = code_snippet_load($values['csid'])) {
+    module_load_include('inc', 'geshifilter', 'geshifilter.pages');
+    // TODO: Query what additional processing is required
+    if ($code_snippet->type == 'php') {
+      $code_snippet->snippet = '<?php'."\n". $code_snippet->snippet ."\n".'?>';
+    }
+    return geshifilter_process_sourcecode($code_snippet->snippet, $code_snippet->type, $values['lineNumbering'], $values['numberStart'], $values['tagstyle'] == 'inline');
+  }
+  // If a tag is given, it is the actual filtering step, hide the warning
+  $warning = t('The code fragment was not located');
+  return $tag ? '<!-- '. $warning .': '. check_plain($tag) .' -->' : $warning;
+}
+
+/**
+ * Style options.
+ */
+function _code_snippet_tag_styles() {
+  return array('inline' => t('Inline'), 'block' => t('Block'));
+}
+
+/**
+ * Private helper function to normalise all values.
+ */
+function _code_snippet_normalise_default_values($values = array()) {
+  $default_values = array(
+    'csid' => 0,
+    'tagstyle' => 'block',
+    'lineNumbering' => '',
+    'numberStart' => '');
+  $tagstyle = _code_snippet_tag_styles();
+  foreach ($default_values as $key => $value) {
+    if (isset($values[$key]) && strlen($values[$key])) {
+      switch ($key) {
+        case 'tagstyle':
+          if (array_key_exists($values[$key], $tagstyle)) {
+            $default_values[$key] = $values[$key];
+          }
+          break;
+        case 'lineNumbering':
+        case 'numberStart':
+        case 'csid':
+          if (is_numeric($values[$key])) {
+            $default_values[$key] = $values[$key];
+          }
+          break;
+      }
+    }
+  }
+  // If a start position is given, we assume line numbering
+  if ($default_values['numberStart'] && !$default_values['lineNumbering']) {
+    $default_values['lineNumbering'] = 1;
+  }
+  // If using line numbering, ensure a start position
+  if (!$default_values['numberStart'] && $default_values['lineNumbering']) {
+    $default_values['numberStart'] = 1;
+  }
+  return $default_values;
+}
+
+/**
+ * Provides the options for the avaliable code snippets stored
+ * against a node.
+ * @param $nid
+ * @return array()
+ */
+function code_snippet_node_snippets($nid = null){
+  static $node_snippets = array();
+
+  if (is_null($nid)) {
+    $snippets = array();
+    $q = db_query("SELECT * FROM {code_snippet}");
+    while ($code_snippet = $q->fetch()) {
+      $snippets[$code_snippet->csid] = $code_snippet->title;
+    }
+    $node_snippets = $snippets;
+    return $node_snippets;
+  }
+
+  // TODO: not working as expected, rewrite if $nid is passed
+  if (!array_key_exists($nid, $node_snippets)) {
+    $snippets = array();
+    $q = db_query("SELECT * FROM {code_snippet} WHERE nid = :nid", array(':nid' => $nid));
+    while ($code_snippet = $q->fetch()) {
+      $snippets[$code_snippet->csid] = $code_snippet->title;
+    }
+    $node_snippets = $snippets;
+  }
+
+  return $node_snippets;
+}

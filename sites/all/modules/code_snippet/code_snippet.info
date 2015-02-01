@@ -1,0 +1,13 @@
+name = Code Snippets
+description = This module defines a data type for source code snippets for the GeSHi syntax highlighting module. It uses this to add code snippets to nodes and provides a filter to enable the use of these fields in formated textareas outside of the normal content filtering.
+core = 7.x
+dependencies[] = geshifilter
+dependencies[] = wysiwyg
+package = Filters
+
+; Information added by drupal.org packaging script on 2013-09-30
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "code_snippet"
+datestamp = "1380559523"
+

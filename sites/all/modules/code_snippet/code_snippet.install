@@ -1,0 +1,51 @@
+<?php
+
+/**
+ * @file
+ * Standard install functions.
+ */
+
+/**
+ * Implementation of hook_schema().
+ */
+function code_snippet_schema() {
+  $schema = array();
+  $schema['code_snippet'] = array(
+    'description' => 'Code Snippets.',
+    'fields' => array(
+      'csid' => array(
+        'description' => 'The primary identifier for a code snippet.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE),
+      'nid' => array(
+        'description' => 'The primary identifier for the node that the code snippet is associated with.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE),
+      'title' => array(
+        'description' => 'The code snippet title, used to identify the snippet.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'type' => array(
+        'description' => 'The code snippet type.',
+        'type' => 'varchar',
+        'length' => 63,
+        'not null' => TRUE,
+      ),
+      'snippet' => array(
+        'description' => 'The code snippet.',
+        'type' => 'text',
+        'not null' => TRUE,
+      ),
+    ),
+    'indexes' => array(
+      'nid'   => array('nid'),
+      'title' => array('title'),
+    ),
+    'primary key' => array('csid'),
+    );
+  return $schema;
+}

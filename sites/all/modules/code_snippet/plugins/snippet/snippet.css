@@ -1,0 +1,114 @@
+
+img.geshi {
+}
+
+.mceActionPanel #edit-delete {
+  background-position: 0px 0px;
+}
+
+#snippet-preview, #snippet-preview .geshifilter {
+  width: 100%;
+  height: 310px;
+  padding: 0;
+  margin: 10px 0 0;
+  overflow: hidden;
+}
+
+#snippet-preview div.geshifilter > pre ol, #snippet-preview div.geshifilter > div ol {
+  padding-left: 4em;
+}
+
+#snippet-preview div.geshifilter > pre, #snippet-preview div.geshifilter > div {
+  overflow: auto;
+  height: 310px;
+}
+
+#code-snippet-snippet-form{
+  background:#EEEEEE;
+  padding:10px;
+  overflow:auto;
+}
+
+#code-snippet-snippet-form #code-snippet-option{
+  float:left;
+  padding:5px;
+  width:180px;
+}
+
+#code-snippet-snippet-form #code-snippet-snippet{
+  margin-left:200px;
+  padding:5px;
+  width:auto;
+  border-left:1px solid #CCC;
+  padding-left:20px;
+}
+
+#code-snippet-snippet-form .form-item{
+  margin:0px;
+  overflow:auto;
+}
+
+#code-snippet-snippet-form #code-snippet-option .form-item{
+  border-bottom:1px solid #CCC;
+  font-size:11px;
+  padding:5px;
+}
+
+#code-snippet-snippet-form #code-snippet-option .form-item .form-item{
+  border:none;
+}
+
+#code-snippet-snippet-form #code-snippet-option .form-item input.form-text{
+  width:100px;
+}
+
+#code-snippet-snippet-form #code-snippet-snippet .form-item input.form-text{
+  width:250px;
+}
+
+.mceActionPanel{
+  text-align:right;
+}
+
+#code-snippet-list-snippet-form{
+  background:#EEEEEE;
+  padding:10px;
+  overflow:auto;
+}
+
+#code-snippet-list-snippet-form #code-snippet-option{
+  float:left;
+  padding:5px;
+  width:180px;
+}
+
+#code-snippet-list-snippet-form #code-snippet-snippet{
+  margin-left:200px;
+  padding:5px;
+  width:auto;
+  border-left:1px solid #CCC;
+  padding-left:20px;
+}
+
+#code-snippet-list-snippet-form .form-item{
+  margin:0px;
+  overflow:auto;
+}
+
+#code-snippet-list-snippet-form #code-snippet-option .form-item{
+  border-bottom:1px solid #CCC;
+  font-size:11px;
+  padding:5px;
+}
+
+#code-snippet-list-snippet-form #code-snippet-option .form-item .form-item{
+  border:none;
+}
+
+#code-snippet-list-snippet-form #code-snippet-option .form-item input.form-text{
+  width:100px;
+}
+
+#code-snippet-list-snippet-form #code-snippet-snippet .form-item input.form-text{
+  width:250px;
+}
