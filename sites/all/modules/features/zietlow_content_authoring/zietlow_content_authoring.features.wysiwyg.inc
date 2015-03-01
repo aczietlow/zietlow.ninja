@@ -36,6 +36,9 @@ function zietlow_content_authoring_wysiwyg_default_profiles() {
         'codesnippet' => array(
           'CodeSnippet' => 1,
         ),
+        'drupal' => array(
+          'media' => 1,
+        ),
       ),
       'toolbarLocation' => 'top',
       'resize_enabled' => 1,

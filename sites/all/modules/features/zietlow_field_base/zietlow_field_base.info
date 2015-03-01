@@ -1,0 +1,12 @@
+name = zietlow_field_base
+core = 7.x
+package = zietlow
+dependencies[] = features
+dependencies[] = taxonomy
+dependencies[] = text
+dependencies[] = zietlow_taxonomy_blog_topic
+features[features_api][] = api:2
+features[field_base][] = body
+features[field_base][] = field_body
+features[field_base][] = field_tags
+project path = sites/all/modules/features/
