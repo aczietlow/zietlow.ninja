@@ -1,0 +1,7 @@
+name = Zietlow's Wysiwyg plugins
+description = Zietlow's plugin to provide additional ckeditor plugins.
+package = Zietlow
+core = 7.x
+
+files[] = zietlow_wysiwyg_plugins.module
+dependencies[] = wysiwyg

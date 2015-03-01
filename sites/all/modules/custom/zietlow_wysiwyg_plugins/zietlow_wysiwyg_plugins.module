@@ -1,0 +1,36 @@
+<?php
+/**
+ * @file
+ * Add additional ckeditor plugins to the wysiwyg module.
+ */
+
+/**
+ * Implements hook_wysiwyg_plugin().
+ */
+function zietlow_wysiwyg_plugins_wysiwyg_plugin ($editor, $version) {
+    $plugins = array();
+    if ($editor == 'ckeditor' && version_compare($version, '4.0', '>=')) {
+        $plugins['codesnippet'] = array(
+          'url' => 'http://ckeditor.com/addon/codesnippet',
+          'path' => wysiwyg_get_path('codesnippet'),
+          'buttons' => array(
+            'CodeSnippet' => t('Code Snippet'),
+          ),
+          'load' => TRUE,
+          'internal' => FALSE,
+        );
+    }
+    return $plugins;
+}
+
+/**
+ * Implements hook_wysiwyg_editor_settings_alter().
+ */
+function zietlow_wysiwyg_plugins_wysiwyg_editor_settings_alter(&$settings, $context) {
+    $extra = explode(',', $settings['extraPlugins']);
+    $extra[] = 'widget';
+    $extra[] = 'lineutils';
+    $extra[] = 'dialog';
+
+    $settings['extraPlugins'] = implode(',', $extra);
+}
