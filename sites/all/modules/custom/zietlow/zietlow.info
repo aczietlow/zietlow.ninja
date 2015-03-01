@@ -44,3 +44,4 @@ dependencies[] = workbench_moderation
 
 ; Custom
 dependencies[] = zietlow_wysiwyg_plugins
+dependencies[] = zietlow_content_authoring
