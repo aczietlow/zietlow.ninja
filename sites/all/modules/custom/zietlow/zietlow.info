@@ -1,0 +1,46 @@
+name = "Zietlow Dependencies"
+description = "Top module for Zietlow's project"
+package = "Zietlow install"
+core = "7.x"
+
+; contrib
+dependencies[] = admin_menu
+dependencies[] = ctools
+dependencies[] = date
+dependencies[] = entity
+;dependencies[] = entityreference
+dependencies[] = features
+;dependencies[] = fences
+dependencies[] = file
+dependencies[] = geshifilter
+dependencies[] = image
+;dependencies[] = jquery_update
+dependencies[] = libraries
+dependencies[] = link
+dependencies[] = list
+;dependencies[] = media
+;dependencies[] = media_wysiwyg
+;dependencies[] = media_wysiwyg_view_mode
+;dependencies[] = menu_admin_per_menu
+;dependencies[] = menu_attributes
+;dependencies[] = menu_block
+dependencies[] = module_filter
+dependencies[] = number
+;dependencies[] = page_manager
+;dependencies[] = panelizer
+;dependencies[] = panels
+;dependencies[] = panels_everywhere
+;dependencies[] = panels_mini
+dependencies[] = path
+;dependencies[] = pathauto
+dependencies[] = search
+dependencies[] = simpletest
+dependencies[] = strongarm
+dependencies[] = taxonomy
+dependencies[] = views
+dependencies[] = views_ui
+dependencies[] = workbench
+dependencies[] = workbench_moderation
+
+; Custom
+dependencies[] = zietlow_wysiwyg_plugins
