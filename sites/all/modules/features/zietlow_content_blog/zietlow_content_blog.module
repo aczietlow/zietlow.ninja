@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the zietlow_content_blog feature.
+ */
+
+include_once 'zietlow_content_blog.features.inc';
