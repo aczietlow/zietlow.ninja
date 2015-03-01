@@ -1,0 +1,12 @@
+name = zietlow_content_authoring
+description = Contains the configuration for the wysiwyg profiles and text formats.
+core = 7.x
+package = zietlow
+dependencies[] = features
+dependencies[] = filter
+dependencies[] = geshifilter
+dependencies[] = wysiwyg
+features[features_api][] = api:2
+features[filter][] = filtered_html
+features[filter][] = full_html
+features[wysiwyg][] = full_html
