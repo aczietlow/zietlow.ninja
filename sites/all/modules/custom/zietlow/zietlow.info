@@ -5,11 +5,15 @@ core = "7.x"
 
 ; contrib
 dependencies[] = admin_menu
+dependencies[] = comment
+dependencies[] = contextual
 dependencies[] = ctools
 dependencies[] = date
+dependencies[] = dblog
 dependencies[] = entity
 ;dependencies[] = entityreference
 dependencies[] = features
+dependencies[] = field_ui
 ;dependencies[] = fences
 dependencies[] = file
 dependencies[] = geshifilter
@@ -19,8 +23,7 @@ dependencies[] = libraries
 dependencies[] = link
 dependencies[] = list
 dependencies[] = media
-dependencies[] = media_wysiwyg
-dependencies[] = media_wysiwyg_view_mode
+dependencies[] = menu
 ;dependencies[] = menu_admin_per_menu
 ;dependencies[] = menu_attributes
 ;dependencies[] = menu_block
@@ -37,6 +40,7 @@ dependencies[] = search
 dependencies[] = simpletest
 dependencies[] = strongarm
 dependencies[] = taxonomy
+dependencies[] = update
 dependencies[] = views
 dependencies[] = views_ui
 dependencies[] = workbench
@@ -44,4 +48,9 @@ dependencies[] = workbench_moderation
 
 ; Custom
 dependencies[] = zietlow_wysiwyg_plugins
+
+; Features
 dependencies[] = zietlow_content_authoring
+dependencies[] = zietlow_content_blog
+dependencies[] = zietlow_field_base
+dependencies[] = zietlow_taxonomy_blog_topic
